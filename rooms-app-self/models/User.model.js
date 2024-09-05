@@ -1,32 +1,56 @@
+/// Import required modules from Mongoose and bcrypt
 const { Schema, model } = require("mongoose");
+const bcrypt = require('bcrypt');
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
+// Define the user schema with email, password, fullName, and optional social login fields
 const userSchema = new Schema(
   {
-    username: {
-      type: String,
-      trim: true,
-      required: false,
-      unique: true
-    },
     email: {
       type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true
+      required: true, // "require" should be "required"
+      unique: true
     },
     password: {
       type: String,
-      required: true
+      required: true // "require" should be "required"
+    },
+    fullName: {
+      type: String,
+      required: true // "require" should be "required"
+    },
+    slackID: {
+      type: String // Optional field for Slack login
+    },
+    googleID: {
+      type: String // Optional field for Google login
     }
   },
   {
-    // this second object adds extra properties: `createdAt` and `updatedAt`    
-    timestamps: true
+    timestamps: true // Automatically add createdAt and updatedAt fields
   }
 );
 
-const User = model("User", userSchema);
+// Hash the password before saving the user document
+userSchema.pre('save', function(next) {
+  const user = this;
 
+  // If the password has not been modified, move to the next middleware
+  if (!user.isModified('password')) return next();
+
+  // Hash the password with bcrypt and assign it to the user object
+  bcrypt.hash(user.password, 10, (err, hash) => {
+    if (err) return next(err);
+
+    // Set the user's password to the hashed value
+    user.password = hash;
+
+    // Move to the next middleware
+    next();
+  });
+});
+
+// Create and export the User model
+const User = model("User", userSchema);
 module.exports = User;
+
+
