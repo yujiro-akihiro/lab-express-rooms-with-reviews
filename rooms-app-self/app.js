@@ -25,10 +25,10 @@ const passport = require('./config/passport'); // passport settings import
 
 // Configure session with MongoDB to store sessions
 app.use(session({
-  secret: 'yourSecretKey', // The key used to encrypt the session
-  resave: false,           // Don't resave session if nothing is changed
-  saveUninitialized: true, // Save a session even if it is uninitialized
-  store: MongoStore.create({ mongoUrl: 'mongodb://localhost/yourDB' }) // Store sessions in MongoDB
+    secret: process.env.SESSION_SECRET, // 環境変数からセッションシークレットを取得
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }) // MongoDBのURLも環境変数から取得
 }));
 
 // Initialize passport and manage sessions

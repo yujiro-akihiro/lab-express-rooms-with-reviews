@@ -1,2 +1,9 @@
 <h1>{{appTitle}} 🚀</h1>
 <p>Welcome Ironhacker!</p>
+
+{{!-- If the user is logged in, display their name --}}
+{{#if user}}
+  <p>You are logged in as {{user.fullName}}. <a href="/logout">Logout</a></p>
+{{else}}
+  <p><a href="/login">Log in</a> or <a href="/signup">Sign up</a> to start exploring rooms.</p>
+{{/if}}

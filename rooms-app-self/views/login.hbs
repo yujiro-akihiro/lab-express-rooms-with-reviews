@@ -1,5 +1,14 @@
+<h1>Login</h1>
+
+<!-- Login form for user authentication -->
 <form action="/login" method="POST">
   <input type="email" name="email" placeholder="Email" required>
   <input type="password" name="password" placeholder="Password" required>
   <button type="submit">Login</button>
 </form>
+
+<!-- Link to sign up if the user doesn't have an account -->
+<p>Don't have an account? <a href="/signup">Sign up</a></p>
+
+<!-- Option to login with Google -->
+<a href="/auth/google">Login with Google</a>
