@@ -8,53 +8,65 @@ const bcrypt = require('bcrypt');
 passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
-}, (email, password, done) => {
-    User.findOne({ email }, (err, user) => {
-        if (err) return done(err);
-        if (!user) return done(null, false, { message: 'Incorrect email.' });
+}, async (email, password, done) => {
+    try {
+        // Find user by email
+        const user = await User.findOne({ email }); // Use async/await for findOne()
+        if (!user) {
+            return done(null, false, { message: 'Incorrect email.' });
+        }
 
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err) return done(err);
-            if (isMatch) {
-                return done(null, user);
-            } else {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
-        });
-    });
+        // Compare the provided password with the stored hashed password
+        const isMatch = await bcrypt.compare(password, user.password); // Use async/await for bcrypt
+        if (isMatch) {
+            return done(null, user); // Passwords match, proceed with authentication
+        } else {
+            return done(null, false, { message: 'Incorrect password.' });
+        }
+    } catch (err) {
+        return done(err); // Handle any errors
+    }
 }));
 
-// // Google strategy for social login
+// // Google strategy for social login (optional)
 // passport.use(new GoogleStrategy({
 //     clientID: process.env.GOOGLE_CLIENT_ID,
 //     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 //     callbackURL: "/auth/google/callback"
-// }, (accessToken, refreshToken, profile, done) => {
-//     User.findOne({ googleID: profile.id }, (err, existingUser) => {
-//         if (err) return done(err);
-//         if (existingUser) return done(null, existingUser);
+// }, async (accessToken, refreshToken, profile, done) => {
+//     try {
+//         // Find existing user with Google ID
+//         let user = await User.findOne({ googleID: profile.id });
+//         if (user) {
+//             return done(null, user); // User found, proceed with login
+//         }
 
+//         // Create new user if not found
 //         const newUser = new User({
 //             googleID: profile.id,
 //             fullName: profile.displayName,
 //             email: profile.emails[0].value
 //         });
-//         newUser.save((err) => {
-//             if (err) return done(err);
-//             return done(null, newUser);
-//         });
-//     });
+//         user = await newUser.save(); // Save new user
+//         return done(null, user);
+//     } catch (err) {
+//         return done(err); // Handle any errors
+//     }
 // }));
 
-// Serialize and deserialize user sessions
+// Serialize user into the session
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-        done(err, user);
-    });
+// Deserialize user from the session
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id); // Find user by ID
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
 });
 
 module.exports = passport;

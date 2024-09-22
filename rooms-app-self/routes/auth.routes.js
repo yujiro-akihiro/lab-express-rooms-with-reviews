@@ -8,10 +8,17 @@ router.get('/signup', (req, res) => {
   res.render('signup'); // Render the signup.hbs template
 });
 
-// Sign-up POST route to handle form submission (async/await added)
+// Sign-up POST route to handle form submission (with server-side password validation)
 router.post('/signup', async (req, res) => {
-  const { email, password, fullName } = req.body; // Extract form data from request
-  const newUser = new User({ email, password, fullName }); // Create new user instance
+  const { email, password, fullName } = req.body;
+
+  // Server-side password validation: check if the password meets the requirements
+  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return res.status(400).send('Password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, and one number.');
+  }
+
+  const newUser = new User({ email, password, fullName });
 
   try {
     await newUser.save(); // Save the new user without a callback (async/await)
@@ -27,9 +34,9 @@ router.get('/login', (req, res) => {
   res.render('login'); // Render the login.hbs template
 });
 
-// Log in POST route to authenticate user
+// Log in POST route to authenticate user using passport's local strategy
 router.post('/login', passport.authenticate('local', {
-  successRedirect: '/dashboard', // Redirect to dashboard on successful login
+  successRedirect: '/rooms', // Redirect to rooms on successful login
   failureRedirect: '/login', // Redirect to login page on failure
   failureFlash: true // Enable error messages on failure (requires connect-flash)
 }));
@@ -47,7 +54,7 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 
 // Google callback route after user authorizes with Google
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  res.redirect('/dashboard'); // Redirect to dashboard after successful Google login
+  res.redirect('/rooms'); // Redirect to rooms after successful Google login
 });
 
 module.exports = router;
