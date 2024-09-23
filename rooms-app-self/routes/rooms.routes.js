@@ -3,6 +3,11 @@ const router = express.Router();
 const Room = require('../models/Room.model');
 const { ensureAuthenticated } = require('../config/auth');
 
+// Create a new room form
+router.get('/rooms/new', ensureAuthenticated, (req, res) => {
+  res.render('rooms/new'); // 部屋作成用のフォームを表示
+});
+
 // List all rooms
 router.get('/rooms', (req, res) => {
   Room.find().populate('owner')
@@ -10,9 +15,18 @@ router.get('/rooms', (req, res) => {
     .catch(err => console.error(err));
 });
 
-// Create a new room form
-router.get('/rooms/new', ensureAuthenticated, (req, res) => {
-  res.render('rooms/new');
+// Show details of a room (with reviews)
+router.get('/rooms/:id', (req, res) => {
+  Room.findById(req.params.id)
+    .populate('owner')
+    .populate({
+      path: 'reviews',
+      populate: { path: 'user' }  // レビューの投稿者も含めてポピュレート
+    })
+    .then(room => {
+      res.render('rooms/show', { room });
+    })
+    .catch(err => console.error(err));
 });
 
 // Create a new room

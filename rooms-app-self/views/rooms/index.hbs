@@ -1,0 +1,16 @@
+<h1>Rooms List</h1>
+<ul>
+  {{#each rooms}}
+    <li>
+      <a href="/rooms/{{this._id}}">{{this.name}}</a> - {{this.description}}
+      <p><img src="{{this.imageUrl}}" alt="{{this.name}}" width="200"/></p>
+      {{#if (eq this.owner._id ../user._id)}}
+        <a href="/rooms/{{this._id}}/edit">Edit</a>
+        <form action="/rooms/{{this._id}}/delete" method="POST">
+          <button type="submit">Delete</button>
+        </form>
+      {{/if}}
+    </li>
+  {{/each}}
+</ul>
+<a href="/rooms/new">Create New Room</a>

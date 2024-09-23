@@ -1,0 +1,22 @@
+<h1>{{room.name}}</h1>
+<p>{{room.description}}</p>
+<img src="{{room.imageUrl}}" alt="{{room.name}}" width="200"/>
+
+<h2>Reviews</h2>
+<ul>
+  {{#each room.reviews}}
+    <li>{{this.comment}} - Posted by {{this.user.fullName}}
+      {{#if (eq this.user._id ../user._id)}}
+        <form action="/rooms/{{../room._id}}/reviews/{{this._id}}/delete" method="POST">
+          <button type="submit">Delete</button>
+        </form>
+      {{/if}}
+    </li>
+  {{/each}}
+</ul>
+
+<h3>Add a Review</h3>
+<form action="/rooms/{{room._id}}/reviews" method="POST">
+  <textarea name="comment" placeholder="Add your review" maxlength="200" required></textarea>
+  <button type="submit">Post Review</button>
+</form>

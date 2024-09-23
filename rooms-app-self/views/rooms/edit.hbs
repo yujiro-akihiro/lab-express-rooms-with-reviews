@@ -1,0 +1,7 @@
+<h1>Edit Room</h1>
+<form action="/rooms/{{room._id}}" method="POST">
+  <input type="text" name="name" value="{{room.name}}" required>
+  <textarea name="description" required>{{room.description}}</textarea>
+  <input type="text" name="imageUrl" value="{{room.imageUrl}}" required>
+  <button type="submit">Update Room</button>
+</form>
