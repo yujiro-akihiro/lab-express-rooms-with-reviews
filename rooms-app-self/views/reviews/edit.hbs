@@ -1,0 +1,6 @@
+<h1>Edit Review</h1>
+<form action="/rooms/{{roomId}}/reviews/{{review._id}}/edit" method="POST">
+  <textarea name="comment" required>{{review.comment}}</textarea>
+  <button type="submit">Update Review</button>
+</form>
+<a href="/rooms/{{roomId}}">Back to Room</a>

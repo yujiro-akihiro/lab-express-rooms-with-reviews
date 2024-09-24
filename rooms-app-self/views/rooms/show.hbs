@@ -1,17 +1,23 @@
 <h1>{{room.name}}</h1>
 <p>{{room.description}}</p>
-<img src="{{room.imageUrl}}" alt="{{room.name}}" width="200"/>
+<img src="{{room.imageUrl}}" alt="{{room.name}}" width="200" />
 
 <h2>Reviews</h2>
 <ul>
   {{#each room.reviews}}
     <li>{{this.comment}} - Posted by {{this.user.fullName}}
       {{#if (eq this.user._id ../user._id)}}
+        <!-- Edit review link -->
+        <a href="/rooms/{{../room._id}}/reviews/{{this._id}}/edit">Edit Review</a>
+        
+        <!-- Delete review form -->
         <form action="/rooms/{{../room._id}}/reviews/{{this._id}}/delete" method="POST">
           <button type="submit">Delete</button>
         </form>
       {{/if}}
     </li>
+  {{else}}
+    <p>No reviews yet. Be the first to review this room!</p>
   {{/each}}
 </ul>
 

@@ -40,12 +40,12 @@ app.locals.appTitle = `${capitalize(projectName)} created with IronLauncher`;
 
 // 📌 Custom Handlebars helper registration
 // Register a custom 'eq' helper for comparison
-// This is necessary to perform conditional rendering in Handlebars templates.
-// For example, you may want to check if the current user is the owner of a room
-// and conditionally display 'Edit' options only for rooms the user owns.
-// The 'eq' helper compares two values and returns true if they are equal.
+// Ensure both values exist before calling toString to prevent errors
 hbs.registerHelper('eq', function (a, b) {
-    return a === b;
+    if (a && b) {
+        return a.toString() === b.toString(); // Ensure ObjectId comparison as strings
+    }
+    return false; // Return false if either value is undefined or null
 });
 
 // 👇 Start handling routes here
@@ -59,6 +59,10 @@ app.use("/", authRoutes); // Use the authentication routes for user signup/login
 // Room routes (CRUD for rooms)
 const roomsRoutes = require("./routes/rooms.routes");
 app.use("/", roomsRoutes); // Include rooms routes
+
+// Review routes (handling reviews for rooms)
+const reviewRoutes = require("./routes/reviews.routes");
+app.use("/", reviewRoutes); // Include reviews routes
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
