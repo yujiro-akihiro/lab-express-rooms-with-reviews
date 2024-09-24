@@ -38,6 +38,16 @@ const projectName = "rooms-app-self";
 
 app.locals.appTitle = `${capitalize(projectName)} created with IronLauncher`;
 
+// 📌 Custom Handlebars helper registration
+// Register a custom 'eq' helper for comparison
+// This is necessary to perform conditional rendering in Handlebars templates.
+// For example, you may want to check if the current user is the owner of a room
+// and conditionally display 'Edit' options only for rooms the user owns.
+// The 'eq' helper compares two values and returns true if they are equal.
+hbs.registerHelper('eq', function (a, b) {
+    return a === b;
+});
+
 // 👇 Start handling routes here
 const indexRoutes = require("./routes/index.routes");
 app.use("/", indexRoutes);
